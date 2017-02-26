@@ -1,0 +1,37 @@
+{
+  "parserOptions": {
+    "ecmaVersion": 6
+  },
+  "env": {
+    "node": true,
+    "mocha": true
+  },
+  "extends": "eslint:recommended",
+  "rules": {
+    "no-restricted-syntax": [ "error",
+      "WithStatement",
+      "ClassExpression"
+    ],
+    "semi": 0,
+    "eqeqeq": "warn",
+    "indent": ["warn", 2],
+    "no-undef": "error",
+    "no-unused-vars": "warn",
+    "no-unreachable": "error",
+    "object-curly-spacing": "warn",
+    "comma-spacing": [ "warn", { "before": false, "after": true }],
+    "max-len": ["warn",{
+      "code": 80,
+      "ignoreStrings": true,
+      "ignoreTemplateLiterals": true
+    }],
+    "no-tabs": "warn",
+    "spaces-in-parens": ["warn", "always"],
+    "spaced-comment": ["warn", "always"],
+    "no-confusing-arrow": ["error", {"allowParens": true}],
+    "no-whitespace-before-property": "warn",
+    "no-trailing-spaces": "warn",
+    "space-infix-ops": "warn"
+
+  }
+}

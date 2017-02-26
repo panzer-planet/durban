@@ -22,7 +22,7 @@ const os = require('os')
 const blessed = require('blessed')
 const contrib = require('blessed-contrib')
 const SlackWebClient = require('@slack/client').WebClient
-var moment = require('moment')
+const moment = require('moment')
 
 // CONSTANTS
 const PACKAGE_NAME = require(CWD + '/package.json').name

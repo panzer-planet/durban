@@ -17,7 +17,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/panzer_planet/envy.git"
+    "url": "git+https://github.com/panzer_planet/durban.git"
   },
   "keywords": [
     "slack",
@@ -32,9 +32,9 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/panzer_planet/envy/issues"
+    "url": "https://github.com/panzer_planet/durban/issues"
   },
-  "homepage": "https://github.com/panzer_planet/envy#readme",
+  "homepage": "https://github.com/panzer_planet/durban#readme",
   "dependencies": {
     "@slack/client": "^3.8.1",
     "blessed": "^0.1.81",
