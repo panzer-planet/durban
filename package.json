@@ -1,0 +1,46 @@
+{
+  "name": "durban",
+  "version": "0.0.0",
+  "private": true,
+  "bin": "./bin/index",
+  "os": [
+    "linux",
+    "darwin"
+  ],
+  "preferGlobal": true,
+  "description": "A terminal based slack client",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node src/index.js --dev=true",
+    "test": "mocha --recursive"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/panzer_planet/envy.git"
+  },
+  "keywords": [
+    "slack",
+    "personal",
+    "client",
+    "cli",
+    "ncurses"
+  ],
+  "author": "Werner Roets <werner@io.co.za>",
+  "contributors": [
+    "Ant Cosentino <ant@io.co.za>"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/panzer_planet/envy/issues"
+  },
+  "homepage": "https://github.com/panzer_planet/envy#readme",
+  "dependencies": {
+    "@slack/client": "^3.8.1",
+    "blessed": "^0.1.81",
+    "blessed-contrib": "^4.7.5",
+    "minimist": "^1.2.0",
+    "mocha": "^3.2.0",
+    "moment": "^2.17.1"
+  }
+}

@@ -1,0 +1,9 @@
+testing/*
+node_modules/
+npm-debug.log
+*.log
+*.DS_Store
+
+coverage/
+slack_dev_token.json
+.durban
