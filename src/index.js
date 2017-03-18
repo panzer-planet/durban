@@ -21,7 +21,10 @@ const fs = require('fs')
 const os = require('os')
 const blessed = require('blessed')
 const contrib = require('blessed-contrib')
+const slack = require('slack')
 const SlackWebClient = require('@slack/client').WebClient
+
+// Slack Client
 const moment = require('moment')
 
 // CONSTANTS
@@ -41,12 +44,18 @@ const USER_CONFIG_FILE = DEV ? CWD + '/.' + PACKAGE_NAME + '/config.json'
 const SLACK_API_TOKEN = DEV ? require(CWD + "/slack_dev_token.json")
                             : process.env.SLACK_API_TOKEN
 
-// SLACK GLOBALS
-var swc = null
-var channels = []
-var members = []
-// BLESSED GLOBALS
 
+
+
+// SLACK GLOBALS
+var swc = null            // Slack Web Client
+var SlackRtmClient = null // Slack WS Client
+
+// STATE DATA
+var channels = []   // Channels in the Slack group
+var members = []    // Members of the Slack group
+
+// BLESSED GLOBALS
 const blessedProgram = blessed.program()
 var gui = {
   screen: null,
@@ -230,17 +239,30 @@ function initGUI(callback) {
 }
 
 function initSlackClient(callback) {
-  swc = new SlackWebClient(SLACK_API_TOKEN)
-  log('Getting channel list')
-  swc.channels.list(function(err, info) {
-    if (err) {
-      callback(err)
-    } else {
-      log("Channel list populated")
-      channels = info.channels
-      callback()
-    }
+
+  SlackRtmClient = slack.rtm.client()
+
+  //     === RTM EVENTS ===
+  // Connected
+  SlackRtmClient.hello(_message => {
+    log("Connected to Slack RTM server")
   })
+
+  // Disconnected
+  SlackRtmClient.goodbye(_message => {
+    log("Disconnected from Slack RTM server")
+  })
+  // Message received
+  SlackRtmClient.message(message => {
+    log(`Got a message`)
+    log(JSON.stringify(message))
+  })
+
+  SlackRtmClient.listen({ token: SLACK_API_TOKEN})
+
+  swc = new SlackWebClient(SLACK_API_TOKEN)
+
+  callback()
 }
 
 function log(text) {
@@ -265,7 +287,7 @@ function boot(callback) {
           gui.screen.render()
           log("GUI initialised")
           initSlackClient((err) => {
-
+            log('POST INIT')
             if(err) {
               log("Could not init slack client " + err.message)
               if(err.message === 'token_revoked') {
@@ -312,13 +334,24 @@ function boot(callback) {
  * Bring down safely
  */
 function shut_down() {
-  blessedProgram.clear();
-  blessedProgram.disableMouse();
-  blessedProgram.showCursor();
-  blessedProgram.normalBuffer();
-  write_streams.log.end()
-  write_streams.user_config.end()
-  return process.exit(0)
+  log('Durban is going down...')
+  log('Closing Slack clients')
+  SlackRtmClient.close()
+
+  log('Cleaning up blessed')
+  blessedProgram.clear()
+  blessedProgram.disableMouse()
+  blessedProgram.showCursor()
+  blessedProgram.normalBuffer()
+
+  log('Closing file streams')
+
+  // Finish loggin before closing streams
+  setTimeout(function() {
+    write_streams.log.end()
+    write_streams.user_config.end()
+    return process.exit(0)
+  }, 100)
 }
 
 
@@ -335,7 +368,7 @@ boot((err) => {
       } else {
           log('=== IMS === ')
         for( var i in info.ims) {
-          log(info.ims[i].user)
+          // log(info.ims[i].user)
           gui.messageList.addItem(info.ims[i].user)
         }
         gui.screen.render()
@@ -344,13 +377,13 @@ boot((err) => {
 
     swc.users.list(function(err, info) {
       // members.id
-      log(JSON.stringify(info))
+      // log(JSON.stringify(info))
       if (err) {
         log('Error:', err);
       } else {
         log('=== MEMBERS === ')
         for(var i in info.members) {
-          log(info.members[i].name)
+          // log(info.members[i].name)
           gui.messageList.addItem(info.members[i].name)
         }
         gui.inputBox.focus()
