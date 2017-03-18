@@ -49,7 +49,8 @@ var channels= []
 const blessedProgram = blessed.program()
 var gui = {
   screen: null,
-  messageBox: null,
+  messageList: null,
+  chatBox: null,
   form: null,
   textBox: null
 }
@@ -134,7 +135,7 @@ function initBlessed(callback) {
 
   gui.screen.title = PACKAGE_NAME
 
-  gui.screen.key(['escape', 'q', 'C-c'], function(ch, key) {
+  gui.screen.key(['C-c'], function(ch, key) {
     shut_down()
   })
 
@@ -143,12 +144,45 @@ function initBlessed(callback) {
 
 function initGUI(callback) {
 
-  gui.messageBox = blessed.box({
+
+  gui.chatBox = blessed.textarea({
     parent: gui.screen,
     scrollable: true,
     alwaysScroll: true,
     // fg: 'green',
+    width: '85%',
+    height: '80%',
+    valign: 'bottom',
+    right: 0,
+    top: 0,
+    tags: true,
+    border: {
+      type: 'line',
+      fg: 'white'
+    }
+  })
+
+  // Message input form
+  gui.inputBox = blessed.textbox({
+    parent: gui.screen,
+    scrollable: true,
+    inputOnFocus: true,
+    keys: true,
+    bottom: 0,
     width: '100%',
+    height: '20%',
+    border: {
+      type: 'line',
+      fg: 'yellow'
+    }
+  })
+
+  gui.messageList = blessed.list({
+    parent: gui.screen,
+    // scrollable: true,
+    keys: true,
+    fg: 'green',
+    width: '15%',
     height: '80%',
     valign: 'bottom',
     left: 0,
@@ -160,17 +194,34 @@ function initGUI(callback) {
     }
   })
 
-  // Message input form
-  gui.inputBox = blessed.textarea({
-    parent: gui.screen,
-    bottom: 0,
-    width: '100%',
-    height: '20%',
-    border: {
-      type: 'line',
-      fg: 'yellow'
-    }
+  // Input
+
+  gui.screen.key(['C-k'], function(ch, key) {
+    gui.inputBox.focus()
   })
+  // InputBox
+  gui.inputBox.on('submit', function(data) {
+    log('inputBox:submit')
+    gui.chatBox.pushLine(data.toString())
+    gui.inputBox.clearValue()
+    gui.screen.render()
+  })
+  gui.inputBox.on('cancel', function(data) {
+    log('inputBox:cancel')
+    gui.chatBox.setText("hi")
+  })
+
+  // Message list
+  gui.messageList.on('cancel', function() {
+    log('messageList:cancel')
+    gui.inputBox.focus()
+  })
+  gui.messageList.on('select', function(data) {
+    log('messageList:select')
+    // log(JSON.stringify(data))
+    gui.inputBox.focus()
+  })
+
   gui.screen.render()
 
   // Channel message box
@@ -275,6 +326,20 @@ boot((err) => {
     throw err
   } else {
     log("startup complete")
+
     // ready and waiting
+    swc.users.list(function(err, info) {
+      // log(JSON.stringify(info))
+      if (err) {
+        log('Error:', err);
+      } else {
+        for(var i in info.members) {
+          gui.messageList.addItem(info.members[i].name)
+        }
+        gui.inputBox.focus()
+        gui.screen.render()
+
+      }
+    })
   }
 })
