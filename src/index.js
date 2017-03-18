@@ -144,39 +144,6 @@ function initBlessed(callback) {
 
 function initGUI(callback) {
 
-
-  gui.chatBox = blessed.textarea({
-    parent: gui.screen,
-    scrollable: true,
-    alwaysScroll: true,
-    // fg: 'green',
-    width: '85%',
-    height: '80%',
-    valign: 'bottom',
-    right: 0,
-    top: 0,
-    tags: true,
-    border: {
-      type: 'line',
-      fg: 'white'
-    }
-  })
-
-  // Message input form
-  gui.inputBox = blessed.textbox({
-    parent: gui.screen,
-    scrollable: true,
-    inputOnFocus: true,
-    keys: true,
-    bottom: 0,
-    width: '100%',
-    height: '20%',
-    border: {
-      type: 'line',
-      fg: 'yellow'
-    }
-  })
-
   gui.messageList = blessed.list({
     parent: gui.screen,
     // scrollable: true,
@@ -194,6 +161,39 @@ function initGUI(callback) {
     }
   })
 
+  gui.chatBox = blessed.log({
+    parent: gui.screen,
+    scrollable: true,
+    alwaysScroll: true,
+    // fg: 'green',
+    width: '85%',
+    height: '80%',
+    valign: 'bottom',
+    right: 0,
+    top: 0,
+    tags: true,
+    border: {
+      type: 'line',
+      fg: 'white'
+    }
+  })
+
+
+  // Message input form
+  gui.inputBox = blessed.textbox({
+    parent: gui.screen,
+    scrollable: true,
+    inputOnFocus: true,
+    keys: true,
+    bottom: 0,
+    width: '100%',
+    height: '20%',
+    border: {
+      type: 'line',
+      fg: 'yellow'
+    }
+  })
+
   // Input
 
   gui.screen.key(['C-k'], function(ch, key) {
@@ -205,10 +205,10 @@ function initGUI(callback) {
     gui.chatBox.pushLine(data.toString())
     gui.inputBox.clearValue()
     gui.screen.render()
+    gui.inputBox.focus()
   })
   gui.inputBox.on('cancel', function(data) {
     log('inputBox:cancel')
-    gui.chatBox.setText("hi")
   })
 
   // Message list
