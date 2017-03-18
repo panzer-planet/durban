@@ -43,7 +43,8 @@ const SLACK_API_TOKEN = DEV ? require(CWD + "/slack_dev_token.json")
 
 // SLACK GLOBALS
 var swc = null
-var channels= []
+var channels = []
+var members = []
 // BLESSED GLOBALS
 
 const blessedProgram = blessed.program()
@@ -325,15 +326,31 @@ boot((err) => {
   if(err) {
     throw err
   } else {
+    // ready and waiting
     log("startup complete")
 
-    // ready and waiting
+    swc.im.list(function(err, info) {
+      if(err) {
+        log('Error: ', err)
+      } else {
+          log('=== IMS === ')
+        for( var i in info.ims) {
+          log(info.ims[i].user)
+          gui.messageList.addItem(info.ims[i].user)
+        }
+        gui.screen.render()
+      }
+    })
+
     swc.users.list(function(err, info) {
-      // log(JSON.stringify(info))
+      // members.id
+      log(JSON.stringify(info))
       if (err) {
         log('Error:', err);
       } else {
+        log('=== MEMBERS === ')
         for(var i in info.members) {
+          log(info.members[i].name)
           gui.messageList.addItem(info.members[i].name)
         }
         gui.inputBox.focus()
@@ -341,5 +358,8 @@ boot((err) => {
 
       }
     })
+    // Let's being
+    gui.inputBox.focus()
+    gui.screen.render()
   }
 })
