@@ -18,7 +18,6 @@
     "no-undef": "error",
     "no-unused-vars": "warn",
     "no-unreachable": "error",
-    "object-curly-spacing": "warn",
     "comma-spacing": [ "warn", { "before": false, "after": true }],
     "max-len": ["warn",{
       "code": 80,
@@ -26,12 +25,11 @@
       "ignoreTemplateLiterals": true
     }],
     "no-tabs": "warn",
-    "spaces-in-parens": ["warn", "always"],
     "spaced-comment": ["warn", "always"],
     "no-confusing-arrow": ["error", {"allowParens": true}],
     "no-whitespace-before-property": "warn",
     "no-trailing-spaces": "warn",
-    "space-infix-ops": "warn"
-
+    "space-infix-ops": "warn",
+    "object-curly-spacing": ["warn", "always"]
   }
 }

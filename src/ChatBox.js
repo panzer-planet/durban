@@ -1,0 +1,5 @@
+class ChatBox {
+  constructor() {
+
+  }
+}
