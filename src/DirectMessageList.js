@@ -1,4 +1,7 @@
 const blessed = require('blessed')
+const EventEmitter = require('events')
+
+var eventEmitter = new EventEmitter()
 
 var _parent = null
 var _log = null
@@ -7,7 +10,7 @@ var _directMessages = []
 
 class DirectMessageList {
 
-  constructor(parent, log) {
+  constructor(parent, log, emitter) {
     _parent = parent
     _log = log
     _blessedList = blessed.list({
@@ -27,6 +30,23 @@ class DirectMessageList {
         fg: 'white'
       }
     })
+
+    _blessedList.on('select', function(data) {
+      emitter.emit('directMessageListSelect', data.getText())
+    })
+
+    _blessedList.on('cancel', function() {
+      emitter.emit('directMessageListCancel')
+    })
+
+  }
+
+  getBlessedList() {
+    return _blessedList
+  }
+
+  on(eventName, callback) {
+    _blessedList.on(eventName, callback)
   }
 
   add(id, userId, username) {

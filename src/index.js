@@ -70,6 +70,9 @@ var SlackRtmClient = null // Slack WS Client
   }
   */
 var rtmsStartData = null
+const EventEmitter = require('events')
+const emitter = new EventEmitter()
+
 
 // STATE DATA
 var state = {
@@ -125,9 +128,33 @@ function initBlessed(callback) {
 
 function initGUI(callback) {
 
-  // DirectMessageList.init(gui.screen, 'DIRECT MESSAGE')
-  durban.directMessageList = new DirectMessageList(gui.screen, log)
+  /*
+  .---------------------.
+  | DIRECT MESSAGE LIST |
+  '---------------------'
+  */
+  durban.directMessageList = new DirectMessageList(gui.screen, log, emitter)
 
+  // ON SELECT
+  emitter.on('directMessageListSelect', function(text) {
+    log('EVENT: ' + 'directMessageListSelect')
+    // change around
+    gui.chatBox.setLabel(text)
+  })
+
+  // ON CANCEL
+  emitter.on('directMessageListCancel', function() {
+    log('EVENT: ' + 'directMessageListCancel')
+    gui.inputBox.focus()
+    // change around
+    // nothing for now
+  })
+
+  /*
+  .---------------------.
+  |      CHAT BOX       |
+  '---------------------'
+  */
   gui.chatBox = blessed.log({
     parent: gui.screen,
     scrollable: true,
@@ -181,13 +208,14 @@ function initGUI(callback) {
     log('inputBox:cancel')
   })
 
+
   // Message list
   // gui.messageList.on('cancel', function() {
   //   log('messageList:cancel')
   //   gui.inputBox.focus()
   // })
 
-  // gui.messageList.on('select', function(data) {
+  // durban.directMessageList.on('select', function(data) {
   //   log('messageList:select')
   //   const text = data.getText()
   //   log(`Switching to chat: ${text}`)
@@ -241,8 +269,6 @@ function initSlackClient(callback) {
           id: item.id,
           user: item.user
         }
-        log('IM ITEM ' + JSON.stringify(no))
-        log('IM ITEM ' + JSON.stringify(item))
 
         return item
       })
@@ -251,7 +277,8 @@ function initSlackClient(callback) {
       // Populate PM list
       // gui.messageList.setItems(data.ims.map(im => im.id))
       data.ims.forEach(item => {
-        durban.directMessageList.add(item.id, item.userId, 'boo')
+        log(JSON.stringify(item))
+        durban.directMessageList.add(item.id, item.user, userIdToName(item.user))
       })
       gui.screen.render()
     }
